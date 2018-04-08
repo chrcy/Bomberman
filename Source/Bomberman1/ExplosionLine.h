@@ -23,6 +23,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// mesh to draw for explosion
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Components)
+	class UStaticMeshComponent* StaticMeshComponent;
+
 	// How Far to cause damage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
 	float MaxLength = 100;

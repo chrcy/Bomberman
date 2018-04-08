@@ -5,6 +5,8 @@
 #include "DestroyInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "ConstructorHelpers.h"
 
 // Sets default values
 AExplosionLine::AExplosionLine()
@@ -14,6 +16,17 @@ AExplosionLine::AExplosionLine()
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxComponent->SetupAttachment(RootComponent);
+
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMeshComponent->SetupAttachment(BoxComponent);
+	StaticMeshComponent->SetWorldScale3D(FVector(0.0f, 0.0f, 0.0f));
+	StaticMeshComponent->SetRelativeLocation(FVector(0, 0, 50));
+	StaticMeshComponent->SetRelativeRotation(FRotator(0, 180, 0));
+
+	StaticMeshComponent->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Mesh/UnitPlane.UnitPlane'")).Object);
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +48,8 @@ void AExplosionLine::Tick(float DeltaTime)
 		CurrentLength = FMath::Clamp(CurrentLength, 0.0f, MaxLength);
 	}
 
+	StaticMeshComponent->SetWorldScale3D(FVector((50 + CurrentLength) / 100.0, 0.8f, 1.0f));
+
 	// set points for line trace
 	FVector StartPoint = GetActorLocation();
 	FVector EndPoint = StartPoint + GetActorForwardVector() * CurrentLength;
@@ -44,7 +59,7 @@ void AExplosionLine::Tick(float DeltaTime)
 	FHitResult HitResult;
 	bool Result = UKismetSystemLibrary::LineTraceSingle(this, StartPoint, EndPoint, 
 		ETraceTypeQuery::TraceTypeQuery1, false, ActorsToIgnore, 
-		EDrawDebugTrace::ForOneFrame, HitResult, true);
+		EDrawDebugTrace::None, HitResult, true);
 
 	if (Result)
 	{
@@ -53,7 +68,7 @@ void AExplosionLine::Tick(float DeltaTime)
 		if (Actor->GetClass()->ImplementsInterface(UDestroyInterface::StaticClass()))
 		{
 			IDestroyInterface::Execute_Destroyed(Actor);
-			Destroy();
+			//Destroy();
 		}
 
 		bCanGrow = false;

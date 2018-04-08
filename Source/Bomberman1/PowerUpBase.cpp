@@ -29,6 +29,7 @@ APowerUpBase::APowerUpBase()
 	// holds icon for power up
 	MaterialBillboardComponent = CreateDefaultSubobject<UMaterialBillboardComponent>(TEXT("MaterialBillboard"));
 	MaterialBillboardComponent->SetupAttachment(BoxComponent);
+	MaterialBillboardComponent->SetVisibility(false);
 
 	// Setup overlap begin delegate
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &APowerUpBase::BeginOverlap);
@@ -50,14 +51,15 @@ void APowerUpBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// turn on collision after small time, otherwise can be destroyed when box is destroyed
-	if (GetGameTimeSinceCreation() > 0.1)
+	if (GetGameTimeSinceCreation() > VisibleDelay)
 	{
 		// now safe to turn on collision
+		MaterialBillboardComponent->SetVisibility(true);
 		BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
 
 	// only active for limited time
-	if (GetGameTimeSinceCreation() > AliveTime)
+	if ((GetGameTimeSinceCreation() - VisibleDelay) > AliveTime)
 	{
 		Destroy();
 	}
@@ -78,7 +80,8 @@ void APowerUpBase::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
 {
 	// play sound
-	UGameplayStatics::PlaySoundAtLocation(this, CollectSound, GetActorLocation());
+	if (MaterialBillboardComponent->IsVisible())
+		UGameplayStatics::PlaySoundAtLocation(this, CollectSound, GetActorLocation());
 }
 
 void APowerUpBase::Destroyed_Implementation()

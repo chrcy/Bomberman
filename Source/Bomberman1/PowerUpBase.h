@@ -45,6 +45,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
 	float AliveTime = 5;
 
+	// will appear after this time
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
+	float VisibleDelay = 2;
+
 	// Play sound when collected
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
 	class USoundWave* CollectSound;
