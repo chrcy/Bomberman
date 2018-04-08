@@ -36,8 +36,16 @@ public:
 	// Set icon to display for powerup
 	void SetIcon(class UMaterialInterface* Material);
 
-	// Overlap
+	// Called when overlap begins with another component
 	UFUNCTION()
 	virtual void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+		
+	// how long to stay alive after spawn
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
+	float AliveTime = 5;
+
+	// Play sound when collected
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
+	class USoundWave* CollectSound;
 };

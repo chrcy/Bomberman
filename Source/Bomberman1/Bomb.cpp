@@ -87,17 +87,26 @@ void ABomb::Tick(float DeltaTime)
 	// destroy bomb if fuze time exceeded
 	if (timeSinceCreation >= FuzeTime)
 	{
+		// bomb can be destroyed now
 		Destroy();
 
 		// spawn explosion lines in all directions
 		FVector Location = GetActorLocation();
 		FActorSpawnParameters SpawnInfo;
+		
+		// explosion line up
 		AExplosionLine *ExplosionLine1 = GetWorld()->SpawnActor<AExplosionLine>(Location, FRotator(0.0f, 0.0f, 0.0f), SpawnInfo);
 		ExplosionLine1->MaxLength = ExplosionLength;
+		
+		// explosion line right
 		AExplosionLine *ExplosionLine2 = GetWorld()->SpawnActor<AExplosionLine>(Location, FRotator(0.0f, 90.0f, 0.0f), SpawnInfo);
 		ExplosionLine2->MaxLength = ExplosionLength;
+		
+		// explosion line down
 		AExplosionLine *ExplosionLine3 = GetWorld()->SpawnActor<AExplosionLine>(Location, FRotator(0.0f, 180.0f, 0.0f), SpawnInfo);
 		ExplosionLine3->MaxLength = ExplosionLength;
+		
+		// explosion line left
 		AExplosionLine *ExplosionLine4 = GetWorld()->SpawnActor<AExplosionLine>(Location, FRotator(0.0f, 270.0f, 0.0f), SpawnInfo);
 		ExplosionLine4->MaxLength = ExplosionLength;
 	}

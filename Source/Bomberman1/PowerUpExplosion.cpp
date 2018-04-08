@@ -33,6 +33,8 @@ void APowerUpExplosion::Tick(float DeltaTime)
 void APowerUpExplosion::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
 {
+	Super::BeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+
 	// increase skill
 	if (OtherActor->GetClass()->ImplementsInterface(UPowerUpInterface::StaticClass()))
 	{

@@ -14,7 +14,7 @@ class UBombInterface : public UInterface
 };
 
 /**
- * 
+ * Implement this for characters that drop bombs
  */
 class BOMBERMAN1_API IBombInterface
 {

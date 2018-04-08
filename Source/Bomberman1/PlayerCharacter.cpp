@@ -39,6 +39,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// bind axis/actions that are setup in the editor
+	
 	PlayerInputComponent->BindAction("Player1DropBomb", IE_Pressed, this, &APlayerCharacter::Player1DropBomb);
 	PlayerInputComponent->BindAction("Player2DropBomb", IE_Pressed, this, &APlayerCharacter::Player2DropBomb);
 
@@ -62,6 +64,7 @@ void APlayerCharacter::Destroyed_Implementation()
 
 void APlayerCharacter::IncreaseSpeed_Implementation()
 {
+	// increae our max walking speed my 50
 	UCharacterMovementComponent *MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
 	if (MovementComponent)
 		MovementComponent->MaxWalkSpeed += 50;
@@ -69,11 +72,13 @@ void APlayerCharacter::IncreaseSpeed_Implementation()
 
 void APlayerCharacter::IncreaseBombs_Implementation()
 {
+	// increase max number of bombs
 	++MaxBombs;
 }
 
 void APlayerCharacter::IncreaseExplosion_Implementation()
 {
+	// increase damage radius of our bombs
 	ExplosionLength += 100;
 }
 
@@ -97,22 +102,37 @@ void APlayerCharacter::DropBomb_Implementation()
 
 void APlayerCharacter::BombExploded_Implementation()
 {
+	// decrement count when bomb has exploded
 	--NumBombs;
 }
 
+// handle player1 movement up/down input axis
 void APlayerCharacter::Player1MoveUp(float AxisValue)
 {
 	AddMovementInput(FVector(1, 0, 0), AxisValue);
+	if (AxisValue > 0)
+		SetActorRotation(FRotator(0, -90, 0));
+	else if (AxisValue < 0)
+		SetActorRotation(FRotator(0, 90, 0));
 }
+
+// handle player1 movement left/right input axis
 void APlayerCharacter::Player1MoveRight(float AxisValue)
 {
 	AddMovementInput(FVector(0, 1, 0), AxisValue);
+	if (AxisValue > 0)
+		SetActorRotation(FRotator(0, 0, 0));
+	else if (AxisValue < 0)
+		SetActorRotation(FRotator(0, 180, 0));
 }
+	
+// handle player1 drop bomb input action
 void APlayerCharacter::Player1DropBomb()
 {
 	DropBomb_Implementation();
 }
 
+// handle player2 movement up/down input axis
 void APlayerCharacter::Player2MoveUp(float AxisValue)
 {
 	// redirect input to player 2
@@ -122,12 +142,14 @@ void APlayerCharacter::Player2MoveUp(float AxisValue)
 		APawn* Pawn = PlayerController->GetPawnOrSpectator();
 		if (Pawn)
 		{
-			ACharacter *Character = Cast<ACharacter>(Pawn);
+			APlayerCharacter *Character = Cast<APlayerCharacter>(Pawn);
 			if (Character)
-				Character->AddMovementInput(FVector(1, 0, 0), AxisValue);
+				Character->Player1MoveUp(AxisValue);
 		}
 	}
 }
+
+// handle player2 movement left/right input axis
 void APlayerCharacter::Player2MoveRight(float AxisValue)
 {
 	// redirect input to player 2
@@ -137,12 +159,14 @@ void APlayerCharacter::Player2MoveRight(float AxisValue)
 		APawn* Pawn = PlayerController->GetPawnOrSpectator();
 		if (Pawn)
 		{
-			ACharacter *Character = Cast<ACharacter>(Pawn);
+			APlayerCharacter *Character = Cast<APlayerCharacter>(Pawn);
 			if (Character)
-				Character->AddMovementInput(FVector(0, 1, 0), AxisValue);
+				Character->Player1MoveRight(AxisValue);
 		}
 	}
 }
+
+// handle player2 drop bomb input action
 void APlayerCharacter::Player2DropBomb()
 {
 	// redirect input to player 2
