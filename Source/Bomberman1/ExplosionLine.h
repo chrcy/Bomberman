@@ -54,5 +54,8 @@ public:
 protected:
 
 	UPROPERTY(transient)
+	FVector Location;
+
+	UPROPERTY(transient)
 	bool bCanGrow = true;
 };

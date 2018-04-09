@@ -23,10 +23,12 @@ AExplosionLine::AExplosionLine()
 	StaticMeshComponent->SetRelativeLocation(FVector(0, 0, 50));
 	StaticMeshComponent->SetRelativeRotation(FRotator(0, 180, 0));
 
-	StaticMeshComponent->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Mesh/UnitPlane.UnitPlane'")).Object);
+	StaticMeshComponent->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Mesh/Plane.Plane'")).Object);
 	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+
+	Location = GetActorLocation();
 }
 
 // Called when the game starts or when spawned
@@ -48,7 +50,9 @@ void AExplosionLine::Tick(float DeltaTime)
 		CurrentLength = FMath::Clamp(CurrentLength, 0.0f, MaxLength);
 	}
 
-	StaticMeshComponent->SetWorldScale3D(FVector((50 + CurrentLength) / 100.0, 0.8f, 1.0f));
+	float Length = 50 + CurrentLength;
+	StaticMeshComponent->SetWorldScale3D(FVector(Length / 100.0, 2.25f, 1.0f));
+	StaticMeshComponent->SetRelativeLocation(FVector(CurrentLength / 2, 0, 0));
 
 	// set points for line trace
 	FVector StartPoint = GetActorLocation();
